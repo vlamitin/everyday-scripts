@@ -58,19 +58,28 @@ type Film struct {
 	PicPortraitUrl string
 }
 
-type OkkoCollection string
+type OkkoRequestElementAlias string
 
 const (
-	OptimumCollection  OkkoCollection = "msvod_all_optimum"
-	NewPromoCollection OkkoCollection = "new-promo"
+	OptimumAlias   OkkoRequestElementAlias = "msvod_all_optimum"
+	NewPromoAlias  OkkoRequestElementAlias = "new-promo"
+	ParamountAlias OkkoRequestElementAlias = "746996"
 )
 
-func GetFilms(collection OkkoCollection) []Film {
-	fmt.Println("collection", collection)
-	firstResponse := getResponse(collection, 10)
+type OkkoRequestElementType string
+
+const (
+	Subscription OkkoRequestElementType = "SUBSCRIPTION"
+	Collection   OkkoRequestElementType = "COLLECTION"
+)
+
+func GetFilms(elementAlias OkkoRequestElementAlias, elementType OkkoRequestElementType) []Film {
+	fmt.Println("elementAlias", elementAlias)
+	fmt.Println("elementType", elementAlias)
+	firstResponse := getResponse(elementAlias, elementType, 10)
 	fmt.Printf("firstResponse films found: %d\n", len(firstResponse.Element.CollectionItems.Items))
 	fmt.Println("firstResponse.Element.CollectionItems.TotalSize", firstResponse.Element.CollectionItems.TotalSize)
-	secondResponse := getResponse(collection, firstResponse.Element.CollectionItems.TotalSize)
+	secondResponse := getResponse(elementAlias, elementType, firstResponse.Element.CollectionItems.TotalSize)
 
 	fmt.Printf("secondResponse films found: %d\n", len(secondResponse.Element.CollectionItems.Items))
 
@@ -105,15 +114,16 @@ func GetFilms(collection OkkoCollection) []Film {
 	return films
 }
 
-func getResponse(collection OkkoCollection, limit int) jsonResponse {
+func getResponse(elementAlias OkkoRequestElementAlias, elementType OkkoRequestElementType, limit int) jsonResponse {
 	client := &http.Client{}
-
+	// https://ctx.playfamily.ru/screenapi/v1/noauth/collection/web/1?elementAlias=746996&elementType=SUBSCRIPTION&limit=16&offset=0&withInnerCollections=true
 	// https://ctx.playfamily.ru/screenapi/v1/noauth/collection/web/1?elementAlias=msvod_all_optimum&elementType=COLLECTION&limit=16&offset=0&withInnerCollections=true
+	// https://ctx.playfamily.ru/screenapi/v1/noauth/collection/web/1?elementAlias=new-promo&elementType=COLLECTION&limit=16&offset=0&withInnerCollections=true
 	req, err := http.NewRequest(
 		"GET",
 		"https://ctx.playfamily.ru/screenapi/v1/noauth/collection/web/1"+"?"+url.Values{
-			"elementAlias":         []string{string(collection)},
-			"elementType":          []string{"COLLECTION"},
+			"elementAlias":         []string{string(elementAlias)},
+			"elementType":          []string{string(elementType)},
 			"limit":                []string{strconv.Itoa(limit)},
 			"offset":               []string{"0"},
 			"withInnerCollections": []string{"true"},

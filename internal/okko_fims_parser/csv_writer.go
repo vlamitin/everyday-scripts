@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func WriteCsv(films []Film, collection OkkoCollection) {
+func WriteCsv(films []Film, collection OkkoRequestElementAlias) {
 	currentTime := time.Now()
 
 	file, err := os.Create(fmt.Sprintf("films_%s_%s.csv", collection, currentTime.Format("02_01_2006T15_04_05")))

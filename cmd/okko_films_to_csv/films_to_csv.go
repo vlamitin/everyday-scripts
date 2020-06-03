@@ -6,12 +6,21 @@ import (
 )
 
 var (
-	Collection string
-	BuildDate  string
+	ElementAlias string
+	ElementType  string
+	BuildDate    string
 )
 
 func main() {
-	fmt.Printf("Executing okko_films_to_csv script, build date: %s, collection: %s\n", BuildDate, Collection)
-	films := okko_fims_parser.GetFilms(okko_fims_parser.OkkoCollection(Collection))
-	okko_fims_parser.WriteCsv(films, okko_fims_parser.OkkoCollection(Collection))
+	fmt.Printf(
+		"Executing okko_films_to_csv script, build date: %s, elementAlias: %s, elementType: %s\n",
+		BuildDate,
+		ElementAlias,
+		ElementType,
+	)
+	films := okko_fims_parser.GetFilms(
+		okko_fims_parser.OkkoRequestElementAlias(ElementAlias),
+		okko_fims_parser.OkkoRequestElementType(ElementType),
+	)
+	okko_fims_parser.WriteCsv(films, okko_fims_parser.OkkoRequestElementAlias(ElementAlias))
 }
